@@ -1,0 +1,27 @@
+# Use the official Node.js runtime as the base image.
+# Using a specific version (18-alpine) ensures consistent builds.
+FROM node:18-alpine
+
+# Set the working directory inside the container.
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files from the
+# 'rag-backend' subdirectory of your host machine into the /app directory
+# of the container. This is a crucial step to fix the ENOENT error.
+COPY rag-backend/package*.json ./
+
+# Install Node.js dependencies as specified in package.json.
+RUN npm install
+
+# Copy the rest of the backend application files from your host's
+# 'rag-backend' subdirectory into the container's /app directory.
+COPY rag-backend/ .
+
+# Expose the port on which the backend server will listen.
+# We only need to expose port 5000 for the Node.js backend.
+EXPOSE 5000
+
+# The CMD instruction specifies the command to run when the container starts.
+# It's a best practice to use a direct command here instead of a shell script
+# for a single-purpose container.
+CMD ["node", "server.js"]
